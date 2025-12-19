@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>爱生活 爱鱼鱼 - 深海奏汰</title>
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "微软雅黑", "宋体", Arial, sans-serif;
+        }
+        /* 深海渐变+动态波浪背景 */
+        body {
+            background: linear-gradient(120deg, #001f3f, #004080, #0066cc);
+            padding: 30px 20px;
+            line-height: 1.8;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 20%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        /* 弹幕容器（全屏覆盖，不遮挡内容） */
+        .barrage-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        /* 炫酷弹幕样式（B站大弹幕风） */
+        .barrage-item {
+            position: absolute;
+            white-space: nowrap;
+            font-size: 28px; /* 超大字体，B站大弹幕尺寸 */
+            font-weight: bold; /* 加粗 */
+            /* 文字描边+发光，B站弹幕经典特效 */
+            -webkit-text-stroke: 1px #000; /* 黑色描边 */
+            text-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor; /* 发光效果 */
+            animation: barrageMove 8s linear forwards;
+            opacity: 0;
+            /* 海洋系炫酷配色 */
+            --color-list: #ffffff, #00ffff, #ff69b4, #ffff00, #9932cc;
+            color: var(--random-color);
+            /* 弹幕间距 */
+            margin-top: 10px;
+        }
+        /* 弹幕移动动画（更丝滑） */
+        @keyframes barrageMove {
+            0% {
+                transform: translateX(100vw) scale(1.1); /* 入场放大 */
+                opacity: 1;
+            }
+            50% {
+                transform: translateX(50vw) scale(1); /* 中间恢复正常 */
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(-100%) scale(0.9); /* 离场缩小 */
+                opacity: 0;
+            }
+        }
+        /* 动态波浪装饰（页面顶部） */
+        .wave-top {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 120px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffffff' fill-opacity='0.1' d='M0,192L48,181.3C96,171,192,149,288,149.3C384,149,480,171,576,181.3C672,192,768,192,864,170.7C960,149,1056,107,1152,101.3C1248,96,1344,128,1392,144L1440,160L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z'%3E%3C/path%3E%3C/svg%3E");
+            background-size: 100% 100%;
+            animation: waveMove 20s linear infinite;
+            z-index: -1;
+        }
+        @keyframes waveMove {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(-25%); }
+            100% { transform: translateX(0); }
+        }
+        /* 容器：玻璃质感 */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.92);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 30, 60, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .container::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            background: linear-gradient(135deg, #0066cc 25%, transparent 25%), linear-gradient(225deg, #0066cc 25%, transparent 25%);
+            background-size: 40px 40px;
+            opacity: 0.3;
+        }
+        /* 标题样式 */
+        h1 {
+            color: #003366;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #0088aa;
+            padding-bottom: 15px;
+            font-size: 32px;
+            position: relative;
+        }
+        h1::before { content: "🐠"; margin-right: 10px; font-size: 28px; }
+        h1::after { content: "🐟"; margin-left: 10px; font-size: 28px; }
+        h2 {
+            color: #005588;
+            margin: 30px 0 18px;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+        }
+        h2::before { content: "🌊"; margin-right: 10px; }
+        h3 {
+            color: #0077aa;
+            margin: 25px 0 12px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+        }
+        h3::before { content: "💧"; margin-right: 8px; }
+        /* 段落和列表 */
+        p {
+            color: #002244;
+            font-size: 17px;
+            margin-bottom: 18px;
+            text-indent: 2em;
+        }
+        ul {
+            margin-left: 50px;
+            margin-bottom: 25px;
+        }
+        li {
+            color: #003366;
+            font-size: 16px;
+            margin-bottom: 10px;
+            list-style: none;
+            position: relative;
+        }
+        li::before { content: "🐡"; position: absolute; left: -25px; top: 2px; }
+        /* 图片容器 */
+        .img-box {
+            text-align: center;
+            margin: 35px 0;
+        }
+        .img-box img {
+            max-width: 500px;
+            height: auto;
+            border-radius: 15px;
+            border: 3px solid;
+            border-image: linear-gradient(to right, #0066cc, #00bfff, #0066cc) 1;
+            box-shadow: 0 5px 15px rgba(0, 100, 180, 0.2);
+            transition: transform 0.3s ease;
+        }
+        .img-box img:hover {
+            transform: scale(1.05);
+        }
+        .img-desc {
+            color: #004477;
+            font-size: 15px;
+            margin-top: 12px;
+            font-style: italic;
+        }
+        /* 信息卡片 */
+        .info-card {
+            background: linear-gradient(90deg, #e6f7ff, #f0f8ff);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border-left: 5px solid #0088aa;
+        }
+        strong {
+            color: #005588;
+            text-shadow: 0 0 2px rgba(0, 100, 180, 0.1);
+        }
+        /* 鱼鱼语录卡片 */
+        .quote-card {
+            background: linear-gradient(135deg, #0066cc, #0088aa);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+            font-size: 18px;
+            font-style: italic;
+            box-shadow: 0 5px 15px rgba(0, 60, 120, 0.3);
+            position: relative;
+        }
+        .quote-card::before { content: "“"; font-size: 40px; opacity: 0.5; position: absolute; left: 15px; top: 10px; }
+        .quote-card::after { content: "”"; font-size: 40px; opacity: 0.5; position: absolute; right: 15px; bottom: 10px; }
+        /* 互动按钮：点击出现鱼鱼祝福 */
+        .btn-box {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .fish-btn {
+            background: linear-gradient(to right, #0088aa, #00bfff);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 100, 180, 0.2);
+            margin: 0 5px;
+        }
+        .fish-btn:hover {
+            background: linear-gradient(to right, #0066cc, #0088aa);
+            transform: translateY(-2px);
+        }
+        /* 祝福提示框 */
+        .tip-box {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            background: #e6f7ff;
+            color: #003366;
+            display: none;
+        }
+        /* 弹幕输入框样式 */
+        .barrage-input-box {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: #e6f7ff;
+            border-radius: 15px;
+            border: 2px dashed #0088aa;
+        }
+        .barrage-input-box h3 {
+            margin-bottom: 15px;
+            color: #005588;
+        }
+        .barrage-input {
+            padding: 10px 15px;
+            width: 60%;
+            max-width: 400px;
+            border: 2px solid #00bfff;
+            border-radius: 50px;
+            outline: none;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        .barrage-input:focus {
+            border-color: #0066cc;
+        }
+        /* 鱼鱼小档案表格 */
+        .table-box {
+            margin: 30px 0;
+            overflow-x: auto;
+        }
+        .fish-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 60, 120, 0.1);
+        }
+        .fish-table th {
+            background: #0066cc;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        .fish-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e6f7ff;
+            color: #003366;
+        }
+        .fish-table tr:hover {
+            background: #f0f8ff;
+        }
+    </style>
+</head>
+<body>
+    <!-- 弹幕容器（必须放在最外层） -->
+    <div class="barrage-container" id="barrageContainer"></div>
+
+    <!-- 动态波浪背景 -->
+    <div class="wave-top"></div>
+
+    <div class="container">
+        <!-- 悬浮海洋元素 -->
+        <div class="float-icon">🐳</div>
+        <div class="float-icon">🐙</div>
+        <div class="float-icon">⭐</div>
+
+        <h1>深海奏汰 - 偶像梦幻祭</h1>
+        
+        <div class="img-box">
+            <img src="深海奏汰.jpg" alt="深海奏汰">
+            <p class="img-desc">深海奏汰 - 海洋系治愈系偶像 🐳</p>
+        </div>
+
+        <p>深海奏汰是身高176cm的可爱鱼鱼，集萌、帅、治愈于一体，是粉丝心中最温柔的海洋系偶像✨。</p>
+        
+        <h2>鱼鱼 鱼鱼我们喜欢你</h2>
+        <ul>
+            <li><strong>正面看</strong>：圆乎乎的脸蛋，眼神软萌，自带海洋生物的治愈感</li>
+            <li><strong>侧面看</strong>：轮廓利落，又帅又萌，反差感拉满</li>
+            <li><strong>后面看</strong>：头发蓬松，背影都透着可爱，让人想rua</li>
+        </ul>
+
+        <div class="info-card">
+            <h3>深海奏汰 基础信息</h3>
+            <p><strong>所属组合</strong>：流星队</p>
+            <p><strong>性格特点</strong>：天然呆、温柔、热爱海洋，说话偶尔会带海洋相关的口癖</p>
+            <p><strong>粉丝昵称</strong>：鱼鱼、奏汰、puka</p>
+        </div>
+
+        <!-- 鱼鱼语录卡片 -->
+        <div class="quote-card">
+            “我用虾钓到了泉哦～” —— 深海奏汰
+        </div>
+
+        <!-- 互动按钮：点击出祝福 -->
+        <div class="btn-box">
+            <button class="fish-btn" onclick="showTip()">点击领取鱼鱼的海洋祝福✨</button>
+            <div class="tip-box" id="tipBox">
+                鱼鱼对你说：“诚实的孩子要奖励噗卡噗卡～🐟”
+            </div>
+        </div>
+
+        <!-- 新：弹幕输入区域 -->
+        <div class="barrage-input-box">
+            <h3>🐟 给鱼鱼发炫酷大弹幕啦 🐟</h3>
+            <input type="text" class="barrage-input" id="barrageInput" placeholder="输入想对鱼鱼说的话，比如「鱼鱼最可爱！」">
+            <button class="fish-btn" onclick="sendBarrage()">发送大弹幕</button>
+        </div>
+
+        <!-- 鱼鱼小档案表格 -->
+        <div class="table-box">
+            <h3>🐠 鱼鱼小档案</h3>
+            <table class="fish-table">
+                <tr>
+                    <th>项目</th>
+                    <th>详情</th>
+                </tr>
+                <tr>
+                    <td>身高</td>
+                    <td>176cm</td>
+                </tr>
+                <tr>
+                    <td>生日</td>
+                    <td>8月30日）</td>
+                </tr>
+                <tr>
+                    <td>喜欢的东西</td>
+                    <td>海洋生物、噗卡噗卡</td>
+                </tr>
+                <tr>
+                    <td>代表色</td>
+                    <td>深海蓝/天蓝色</td>
+                </tr>
+            </table>
+        </div>
+
+        <h3>为什么深海奏汰这么可爱？</h3>
+        <p>不是才可爱过吗？ 为什么又这么可爱！！！</p>
+        <p>爱生活 爱鱼鱼💖。</p>
+    </div>
+
+    <!-- 互动功能的JS代码 -->
+    <script>
+        // 1. 鱼鱼祝福提示
+        function showTip() {
+            const tipBox = document.getElementById("tipBox");
+            tipBox.style.display = "block";
+            setTimeout(() => {
+                tipBox.style.display = "none";
+            }, 3000);
+        }
+
+        // 2. 炫酷弹幕功能核心代码
+        function sendBarrage() {
+            // 获取输入的弹幕内容
+            const input = document.getElementById("barrageInput");
+            const text = input.value.trim();
+            if (!text) { 
+                alert("要输入想对鱼鱼说的话哦～");
+                return;
+            }
+
+            // 创建弹幕元素
+            const barrageContainer = document.getElementById("barrageContainer");
+            const barrageItem = document.createElement("div");
+            barrageItem.className = "barrage-item";
+            barrageItem.innerText = text;
+
+            // 随机样式：高度、颜色、速度
+            const randomTop = Math.floor(Math.random() * 70) + 15; // 15%-85%高度（避免太靠边）
+            const randomColor = ["#ffffff", "#00ffff", "#ff69b4", "#ffff00", "#9932cc"][Math.floor(Math.random() * 5)]; // 白/青/粉/黄/紫
+            const randomDuration = Math.floor(Math.random() * 4) + 7; // 7-10秒移动完（大弹幕慢一点更显眼）
+
+            // 设置样式
+            barrageItem.style.top = `${randomTop}%`;
+            barrageItem.style.setProperty('--random-color', randomColor);
+            barrageItem.style.animationDuration = `${randomDuration}s`;
+
+            // 添加到页面
+            barrageContainer.appendChild(barrageItem);
+
+            // 清空输入框
+            input.value = "";
+
+            // 弹幕结束后移除元素
+            setTimeout(() => {
+                barrageItem.remove();
+            }, randomDuration * 1000);
+        }
+
+        // 按回车也能发送弹幕
+        document.getElementById("barrageInput").addEventListener("keydown", function(e) {
+            if (e.key === "Enter") {
+                sendBarrage();
+            }
+        });
+
+        // 3. 页面加载时自动发几条预设炫酷弹幕
+        window.onload = function() {
+            const defaultBarrages = [
+                "鱼鱼最可爱！🐟",
+                "深海奏汰贴贴～✨",
+                "大海的孩子太温柔啦～",
+                "流星队yyds！",
+                "puka贴贴～"
+            ];
+            // 每隔2秒发一条预设弹幕
+            defaultBarrages.forEach((text, index) => {
+                setTimeout(() => {
+                    const barrageContainer = document.getElementById("barrageContainer");
+                    const barrageItem = document.createElement("div");
+                    barrageItem.className = "barrage-item";
+                    barrageItem.innerText = text;
+                    const randomTop = Math.floor(Math.random() * 70) + 15;
+                    const randomColor = ["#ffffff", "#00ffff", "#ff69b4", "#ffff00", "#9932cc"][Math.floor(Math.random() * 5)];
+                    const randomDuration = Math.floor(Math.random() * 4) + 7;
+                    barrageItem.style.top = `${randomTop}%`;
+                    barrageItem.style.setProperty('--random-color', randomColor);
+                    barrageItem.style.animationDuration = `${randomDuration}s`;
+                    barrageContainer.appendChild(barrageItem);
+                    setTimeout(() => {
+                        barrageItem.remove();
+                    }, randomDuration * 1000);
+                }, index * 2000);
+            });
+        };
+    </script>
+</body>
+</html>
